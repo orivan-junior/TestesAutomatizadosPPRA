@@ -17,7 +17,6 @@ Funcionalidade: SISTRAN » Projeto - PPRA-SRV-PROPOSTAS-CORRETOR
     Dado para a consulta de propostas, o header "canal" tem o valor "27"
     # Parâmetros da query string
     Quando eu consulto propostas pendentes para o corretor com CNPJ "07753626000118"
-    # Então o sistema deve retornar o código de status 200
     Então o sistema deve retornar o código de status 422
     E a resposta da consulta de propostas pendentes deve ser válida
 
@@ -27,7 +26,6 @@ Funcionalidade: SISTRAN » Projeto - PPRA-SRV-PROPOSTAS-CORRETOR
     Dado para a consulta de propostas, o header "canal" tem o valor "27"
     # Parâmetros da query string
     Quando eu consulto propostas pendentes para o corretor com CNPJ "1497994000166"
-    # Então o sistema deve retornar o código de status 200
     Então o sistema deve retornar o código de status 400
     E a resposta da consulta de propostas pendentes deve ser válida
 
@@ -75,7 +73,6 @@ Funcionalidade: SISTRAN » Projeto - PPRA-SRV-PROPOSTAS-CORRETOR
     Dado para a consulta de propostas, o header "canal" tem o valor "27"
     # Parâmetros da query string
     Quando eu consulto a carteira de propostas para o corretor com CNPJ "02505611000117"
-    # Então o sistema deve retornar o código de status 200
     Então o sistema deve retornar o código de status 422
     E a resposta da consulta da carteira de propostas deve ser válida
 
@@ -85,7 +82,6 @@ Funcionalidade: SISTRAN » Projeto - PPRA-SRV-PROPOSTAS-CORRETOR
     Dado para a consulta de propostas, o header "canal" tem o valor "27"
     # Parâmetros da query string
     Quando eu consulto a carteira de propostas para o corretor com CNPJ "1497994000166"
-    # Então o sistema deve retornar o código de status 200
     Então o sistema deve retornar o código de status 400
     E a resposta da consulta da carteira de propostas deve ser válida
 
