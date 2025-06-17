@@ -1,0 +1,22 @@
+{
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "allure-commandline": "^2.33.0",
+    "allure-js-commons": "^3.2.1",
+    "allure-playwright": "^3.2.1",
+    "playwright-bdd": "^8.2.1"
+  },
+  "scripts": {
+    "run_server_allure": "npx allure serve",
+    "gerar-pasta-relatorio": "npx allure generate ./allure-results --clean",
+    "run_historico-allure-results": "npx allure serve allure-results",
+    "run_bdd_playwright": "npx bddgen && npx playwright test",
+    "run_playwright": "npx playwright test",
+    "teste": "npx bddgen && npx playwright test --grep @teste",
+    "ppra": "npx bddgen && npx playwright test --grep @ppra"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "pdf-parse": "^1.1.1"
+  }
+}

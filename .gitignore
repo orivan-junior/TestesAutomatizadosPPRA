@@ -1,0 +1,80 @@
+# Dependências do Node.js
+/node_modules/
+
+# Arquivos de Log
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+# pm2-logs/ # Removido se PM2 não for usado neste contexto específico
+
+# Relatórios de diagnóstico (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Dados de tempo de execução
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Diretório de cobertura de testes (geralmente usado por Istanbul/nyc)
+coverage/
+*.lcov
+.nyc_output/
+
+# Saídas de build e pacotes
+dist/
+build/
+out/
+*.tgz # Saída do 'npm pack' ou 'yarn pack'
+
+# Arquivos de configuração de ambiente (NUNCA versione arquivos com segredos!)
+.env
+.env.*
+!.env.example # É uma boa prática versionar um exemplo de .env
+!.env.test # Se você tem um .env específico para testes que NÃO contém segredos e precisa ser versionado
+
+# Específico do Playwright
+test-results/
+playwright-report/
+allure-results/
+allure-report/
+/playwright/.cache/
+# Descomente se você grava vídeos/screenshots/traces e não quer versioná-los
+# videos/
+# screenshots/
+# traces/
+
+# Pastas geradas (exemplo: a partir de arquivos .feature, dentro de e2e)
+/.features-gen/
+
+# Específico do Cucumber (Relatórios)
+# Se você gerar relatórios do Cucumber em um diretório específico, adicione-o aqui.
+# Exemplo:
+# cucumber-reports/
+# report/
+# *.html # Para relatórios HTML
+# *.json # Se forem relatórios JSON que não devem ser versionados (e.g., gerados durante a execução)
+
+# Cache e arquivos temporários de ferramentas
+.cache/ # Genérico, bom manter
+# .parcel-cache/ # Removido se Parcel não for usado
+# *.tsbuildinfo # Removido se TypeScript não for usado neste projeto e2e
+
+# Específico de IDEs e Editores
+.vscode/ # VS Code, exceto arquivos que você queira compartilhar (e.g., .vscode/settings.json se for configuração do projeto)
+
+# Arquivos temporários/backup comuns de editores
+*.swp # Vim swap files
+*.swo # Vim swap files
+*~ # Backup files
+
+# Arquivos gerados pelo Sistema Operacional
+.DS_Store # macOS
+Thumbs.db # Windows
+Desktop.ini # Windows
+
+# Histórico do REPL do Node.js
+.node_repl_history

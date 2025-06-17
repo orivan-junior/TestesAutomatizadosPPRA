@@ -1,0 +1,20 @@
+# Define o comportamento padrão para todos os arquivos de texto.
+# Git tentará detectar automaticamente se um arquivo é texto.
+# Para arquivos de texto, os finais de linha serão normalizados para LF no repositório.
+* text=auto eol=lf
+
+# Você pode adicionar exceções para tipos de arquivos específicos se necessário,
+# por exemplo, para scripts de shell do Windows que exigem CRLF:
+# *.bat text eol=crlf
+# *.cmd text eol=crlf
+
+# Para arquivos binários, para garantir que não sejam alterados:
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+# Adicione outros tipos de arquivos binários conforme necessário
