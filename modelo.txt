@@ -1,270 +1,112 @@
-Guia Mestre para Geração de Testes (Gherkin + Playwright BDD) v3 - Projeto Atual
-Este documento é o guia contextual para a geração de arquivos de teste (.feature e .steps.js) a partir de uma requisição cURL. A IA deve seguir este modelo para substituir os placeholders pelos dados específicos da requisição fornecida, alinhando-se aos padrões do projeto.
+const GEMINI_PROMPT = `Você é um especialista em testes de API e BDD com Playwright. Sua tarefa é converter comandos cURL em arquivos de teste Gherkin (.feature) e suas correspondentes definições de passos (.js), seguindo um padrão de projeto rigoroso.
 
-1. Extração de Dados do cURL
-A IA deve analisar o cURL e extrair as seguintes informações:
+## 🎯 OBJETIVO PRINCIPAL
+Converter um comando \`curl\` em dois arquivos de teste:
+1.  Um arquivo Gherkin (.feature) com formatação e nomenclatura de alta especificidade.
+2.  Um arquivo de definições de passos (.js) robusto que corresponda exatamente aos passos gerados.
 
-{{HTTP_METHOD}}: Método HTTP (ex: POST, GET).
-{{ENDPOINT_URL}}: URL completa da requisição.
-{{SERVICE_NAME_FROM_URL_PATH_UPPERCASE}}: Nome do serviço em maiúsculas, extraído da URL (ex: PPRA-SRV-PROPOSTAS-CORRETOR).
-{{SERVICE_NAME_FRIENDLY}}: Nome amigável do serviço para descrições (ex: Propostas do Corretor, Consulta de Parâmetros).
-{{ENDPOINT_PATH_RELATIVE}}: Caminho relativo do endpoint (ex: /pendentes, /ci/healthcheck, /parametros/consultar).
-{{ENDPOINT_ACTION_DESCRIPTION}}: Descrição concisa da ação do endpoint (ex: consulta de propostas pendentes, atualização de status, consulta de parâmetros).
-Headers:
-{{AUTH_HEADER_NAME_FROM_CURL}}: Nome do header de autenticação principal no cURL (ex: CA_KEY, Authorization, Cookie). (Nota: O valor virá do .env).
-{{BUSINESS_HEADERS_FROM_CURL}}: Lista de headers de negócio (chave: valor) presentes no cURL (ex: canal, codigoVersao).
-Payload (Corpo - para POST/PUT):
-{{PAYLOAD_FIELDS_FROM_CURL}}: Lista de campos e valores do JSON do corpo da requisição.
-Query Parameters (para GET):
-{{QUERY_PARAMS_FROM_CURL}}: Lista de parâmetros da query string (chave: valor).
+## 📜 CONTEXTO DO TESTE
+O contexto será sempre um comando \`curl\`. Analise-o para extrair o método HTTP, URL, headers e o payload. O nome do serviço (ex: \`ppra-srv-certificado-endosso\`) é a chave para a nomenclatura.
 
-2. Geração do Arquivo .feature
-Lógica de Geração:
+## 🧪 ESTRUTURA DA GERAÇÃO
 
-A descrição da ação ({{ENDPOINT_ACTION_DESCRIPTION}}) e outros parâmetros variáveis serão inseridos no texto dos passos.
-Headers de autenticação (como {{AUTH_HEADER_NAME_FROM_CURL}}) NÃO são definidos explicitamente nos steps `Dado`; eles são gerenciados pelos steps JS e .env.
-Localização: Scenarios/{{MODULE_NAME}}/{{SERVICE_NAME_FROM_URL_PATH_LOWERCASE}}/{{SERVICE_NAME_FROM_URL_PATH_LOWERCASE}}.feature
+### 1. ARQUIVO FEATURE (exemplo.feature):
+Gere o Gherkin seguindo **EXATAMENTE** este padrão de nomenclatura e estrutura, usando o exemplo abaixo como referência obrigatória.
 
-Gherkin
-
+---
+**EXEMPLO DE REFERÊNCIA OBRIGATÓRIA:**
+\`\`\`gherkin
 # language: pt
-Funcionalidade: SISTRAN » Projeto - {{SERVICE_NAME_FROM_URL_PATH_UPPERCASE}}
+Funcionalidade: SISTRAN » Projeto - PPRA-SRV-SIMULAR-BENEFICIO-APOSENTADORIA
 
-  @{{SERVICE_TAG_LOWERCASE}} @ppra @{{CONTEXT_TAG}} # ex: @propostas_pendentes_cnpj, @healthcheck
-  Cenário: CT<XXX> - {{ENDPOINT_ACTION_DESCRIPTION}} {{RESULTADO_ESPERADO_OU_CONDICAO}} # ex: com sucesso, sem sucesso por CA_KEY inválida
-    # Para cada header de negócio ({{BUSINESS_HEADERS_FROM_CURL}}):
-    Dado para a "{{ENDPOINT_ACTION_DESCRIPTION_CONTEXTUALIZADA}}", o header "{{nomeHeaderNegocio}}" tem o valor "{{valorHeaderNegocio}}"
-    # Para cada campo do payload ({{PAYLOAD_FIELDS_FROM_CURL}}) (apenas para POST/PUT):
-    Dado para a "{{ENDPOINT_ACTION_DESCRIPTION_CONTEXTUALIZADA}}", a chave "{{nomeCampoPayload}}" tem o valor "{{valorCampoPayload}}"
-    # Para cenários de autenticação falha (ex: CA_KEY inválida):
-    # Dado que eu não esteja autenticado
+  @simular_beneficio_aposentadoria @ppra @teste @simular_beneficio_aposentadoriaTI
+  Cenário: CT01 - Simular benefício de aposentadoria com sucesso
+    Dado que eu esteja autenticado
+    E que eu utilize o payload do arquivo "PPRA/ppra-srv-simular-beneficio-aposentadoria/ct01_simular_beneficio_sucesso.json"
+    Quando eu envio uma requisição POST para simular o benefício de aposentadoria
+    Então o sistema deve retornar o código de status 200
+    E a resposta da simulação de benefício deve ser válida
+\`\`\`
+---
 
-    # O step 'Quando' será específico para a ação e o tipo de requisição.
-    # Exemplo POST:
-    Quando eu envio uma requisição POST para {{ENDPOINT_ACTION_DESCRIPTION_NO_WHEN}}
-    # Exemplo GET com query params:
-    # Quando eu consulto {{ENDPOINT_ACTION_DESCRIPTION_NO_WHEN}} para o corretor com CNPJ "{{valorCnpj}}"
-    # Exemplo GET healthcheck:
-    # Quando eu envio uma requisição GET para o healthcheck do serviço de {{SERVICE_NAME_FRIENDLY_LC}}
+- **Funcionalidade:** Use o formato \`SISTRAN » Projeto - [NOME-DO-SERVIÇO-EM-MAIÚSCULAS]\`.
+- **Tags:** Gere 4 tags a partir do nome do serviço (ex: \`simular-beneficio-aposentadoria\`):
+    1. O nome da ação em snake_case: \`@simular_beneficio_aposentadoria\`
+    2. O nome do projeto (primeira parte do serviço): \`@ppra\`
+    3. A tag fixa: \`@teste\`
+    4. O nome da ação em snake_case com o sufixo 'TI': \`@simular_beneficio_aposentadoriaTI\`
+- **Cenário:** Use o formato \`CT01 - [Descrição da Ação] com sucesso\`. A descrição deve ser humanizada a partir do nome do serviço.
+- **Payload (`Dado`):** O caminho do arquivo deve ser \`[PROJETO-MAIÚSCULO]/[nome-completo-do-serviço]/[nome_cenario].json\`.
+- **Passos de Ação (`Quando`/`Então`):** **NÃO USE PARÂMETROS DE STRING PARA AÇÕES.** O texto do passo deve ser fixo e descritivo, incorporando o método HTTP.
+    - Ex. Quando: \`Quando eu envio uma requisição POST para simular o benefício de aposentadoria\`
+    - Ex. Então: \`E a resposta da simulação de benefício deve ser válida\`
 
-    Então o sistema deve retornar o código de status {{EXPECTED_STATUS_CODE}} # ex: 200, 403, 422
-    E a resposta da "{{ENDPOINT_ACTION_DESCRIPTION_CONTEXTUALIZADA}}" deve ser válida
-    # Adicionar steps 'Então' específicos se necessário:
-    # E o header "Content-Type" da resposta deve ser "application/pdf"
-    # E o PDF retornado deve conter o texto "..."
-    # E o PDF retornado deve ser salvo como "..."
+### 2. ARQUIVO STEPS (exemplo.steps.js):
+Gere o arquivo de passos para corresponder aos passos fixos gerados no .feature.
 
-3. Geração do Arquivo .steps.js
-Lógica de Geração:
+- **Nomenclatura Dinâmica:** Baseie nomes de funções e variáveis de ambiente no nome do serviço (ex: \`callPpraEndossoApi\`, \`BASE_URL_PPRA_ENDOSSO\`).
+- **Passos Fixos:** As definições de \`When\` e \`Then\` devem corresponder ao texto exato gerado no .feature, sem usar parâmetros para a descrição da ação.
 
-As definições dos passos (Given, When, Then) usarão a sintaxe BDD padrão.
-A IA deve preencher os placeholders com os valores extraídos do cURL e seguir os padrões de implementação do projeto.
-Localização: Scripts/Page/{{MODULE_NAME}}/{{SERVICE_NAME_FROM_URL_PATH_LOWERCASE}}/{{SERVICE_NAME_FROM_URL_PATH_LOWERCASE}}Steps.js
-
-JavaScript
-
+- **Padrão do Código:**
 import { expect } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
 import dotenv from 'dotenv';
-// Importar módulos adicionais se necessário (ex: pdf-parse, fs, path)
+import fs from 'fs/promises';
+import path from 'path';
 
 dotenv.config();
 
-// --- Variáveis de escopo ---
 let requestPayload;
-let headerValuesFromBDD;
-let queryParamsFromBDD;
-let forceInvalidCaKey = false; // Para cenários de autenticação falha com CA_KEY
+let isAuthenticated = false;
 
 const { Given, When, Then, Before } = createBdd();
 
-// --- Placeholders a serem substituídos pela IA ---
-const SERVICE_NAME_UPPER_SNAKE_CASE = '{{SERVICE_NAME_FROM_URL_PATH_UPPERCASE_SNAKE_CASE}}'; // ex: PPRA_SRV_PROPOSTAS_CORRETOR
-const AUTH_HEADER_NAME_FOR_ENV = '{{AUTH_HEADER_NAME_FROM_CURL}}'; // ex: CA_KEY, AUTH_TOKEN (para Authorization), COOKIE
-const HTTP_METHOD_CURL = '{{HTTP_METHOD}}'; // ex: GET, POST
-const ENDPOINT_PATH_CURL = '{{ENDPOINT_PATH_RELATIVE}}'; // ex: /pendentes, /parametros/consultar
+Before(async () => { /* ... código ... */ });
 
-// TODO: IA - Preencha estes arrays com as chaves do cURL.
-const payloadKeysFromCurl = [{{PAYLOAD_KEYS_AS_QUOTED_STRINGS_FROM_CURL}}]; // Apenas para POST/PUT
-const businessHeaderKeysFromCurl = [{{BUSINESS_HEADER_KEYS_AS_QUOTED_STRINGS_FROM_CURL}}]; // Headers que não são de autenticação
+// ** ADAPTAR DINAMICAMENTE ESTA FUNÇÃO **
+const getApiHeadersFor[NomeDoServico] = () => { /* ... código ... */ };
 
-// Hook para resetar o estado antes de cada cenário
-Before(async function() {
-  requestPayload = {};
-  headerValuesFromBDD = {};
-  queryParamsFromBDD = {};
-  forceInvalidCaKey = false; // Resetar flags de autenticação
+// ** ADAPTAR DINAMICAMENTE ESTA FUNÇÃO **
+async function call[NomeDoServico]Api(request, payload) { /* ... código ... */ };
+
+Given('que eu esteja autenticado', async () => { /* ... código ... */ });
+
+Given('que eu utilize o payload do arquivo {string}', async ({}, filePath) => { /* ... código ... */ });
+
+// ** O TEXTO DO PASSO DEVE SER FIXO E GERADO DINAMICAMENTE **
+When('eu envio uma requisição POST para simular o benefício de aposentadoria', async function({ request }) {
+    expect(requestPayload, "Payload não foi definido.").toBeDefined();
+    console.log('Payload final:', JSON.stringify(requestPayload, null, 2));
+    this.apiResponse = await call[NomeDoServico]Api(request, requestPayload); // Adaptar a chamada
+    // ... resto do código
 });
 
-const getApiHeaders{{SERVICE_NAME_PASCAL_CASE}} = (dynamicHeadersFromBDD) => {
-  let authValue;
-  const authHeaderKey = AUTH_HEADER_NAME_FOR_ENV; // ex: CA_KEY, Authorization, Cookie
-
-  if (authHeaderKey === 'CA_KEY' && forceInvalidCaKey) {
-    authValue = 'INVALID_CA_KEY_FOR_TESTING_403';
-  } else if (authHeaderKey === 'Authorization' && forceInvalidCaKey) {
-    authValue = 'INVALID_BEARER_TOKEN';
-  } else if (authHeaderKey === 'Cookie' && forceInvalidCaKey) {
-    authValue = 'invalid_cookie=test';
-  }
-  else {
-    // A IA precisa garantir que o nome da var de env seja consistente com o projeto.
-    // Ex: process.env.CA_KEY_SERVICE_NAME ou process.env.AUTH_TOKEN_SERVICE_NAME
-    authValue = process.env[`${authHeaderKey}_${SERVICE_NAME_UPPER_SNAKE_CASE}`] || process.env[authHeaderKey];
-  }
-
-  const headers = { 
-    'accept': 'application/json', // Padrão, pode ser ajustado se o cURL especificar outro (ex: */*)
-  };
-
-  if (HTTP_METHOD_CURL.toUpperCase() === 'POST' || HTTP_METHOD_CURL.toUpperCase() === 'PUT') {
-    headers['Content-Type'] = 'application/json'; // Padrão para POST/PUT com JSON
-  }
-
-  if (authValue) {
-    if (authHeaderKey.toLowerCase() === 'authorization' && !authValue.toLowerCase().startsWith('bearer ')) {
-      headers[authHeaderKey] = `Bearer ${authValue}`;
-    } else {
-      headers[authHeaderKey] = authValue;
-    }
-  } else {
-    if (!forceInvalidCaKey) { 
-      console.warn(`AVISO: Nenhum valor de autenticação foi encontrado para o header '${authHeaderKey}' nas variáveis de ambiente para ${SERVICE_NAME_UPPER_SNAKE_CASE}.`);
-    }
-  }
-
-  businessHeaderKeysFromCurl.forEach(key => {
-    if (dynamicHeadersFromBDD[key] !== undefined) {
-      headers[key] = String(dynamicHeadersFromBDD[key]);
-    }
-  });
-  console.log(`Headers finais para ${SERVICE_NAME_FRIENDLY}:`, headers);
-  return headers;
-};
-
-async function call{{SERVICE_NAME_PASCAL_CASE}}Api(request, method, endpointPath, queryParams, payload, dynamicHeaders) {
-  const baseUrl = process.env[`BASE_URL_${SERVICE_NAME_UPPER_SNAKE_CASE}`];
-  if (!baseUrl) {
-    throw new Error(`ERRO: A variável de ambiente BASE_URL_${SERVICE_NAME_UPPER_SNAKE_CASE} não está configurada no .env.`);
-  }
-
-  let fullUrl = `${baseUrl}${endpointPath}`;
-  const currentHeaders = getApiHeaders{{SERVICE_NAME_PASCAL_CASE}}(dynamicHeaders);
-  const requestOptions = { headers: currentHeaders };
-
-  if (method.toUpperCase() === 'GET') {
-    const queryString = new URLSearchParams(queryParams).toString();
-    if (queryString) {
-      fullUrl += `?${queryString}`;
-    }
-    return await request.get(fullUrl, requestOptions);
-  } else if (method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT') {
-    requestOptions.data = payload;
-    return await requestmethod.toLowerCase();
-  }
-  throw new Error(`Método HTTP não suportado: ${method}`);
-}
-
-// --- Implementação dos Steps ---
-
-// Exemplo de step para autenticação falha (CA_KEY)
-Given('que eu não esteja autenticado', async () => {
-  forceInvalidCaKey = true;
-  console.log('Simulando não autenticado: CA_KEY inválida será usada.');
+// ** O TEXTO DO PASSO DEVE SER FIXO E GERADO DINAMICAMENTE **
+Then('a resposta da simulação de benefício deve ser válida', async function() {
+  expect(this.apiResponse, "A resposta da API não foi definida.").toBeDefined();
+  expect(this.apiResponse.ok()).toBe(true);
+  // ... resto do código
 });
 
-Given('para a {string}, a chave {string} tem o valor {string}', async ({}, _actionDescriptionContext, key, value) => {
-  let processedValue = value;
-  if (payloadKeysFromCurl.includes(key)) {
-    if (key !== 'observacao' && key !== 'chave' /* Adicionar outras chaves string aqui */ && !isNaN(processedValue) && String(processedValue).trim() !== '') {
-        processedValue = Number(processedValue);
-    }
-    requestPayload[key] = processedValue;
-  } else { // Assume que é um header se não for payload
-    headerValuesFromBDD[key] = String(processedValue);
-  }
-  console.log(`Parâmetro definido: Chave='${key}', Valor='${processedValue}', Destino=${payloadKeysFromCurl.includes(key) ? 'Payload' : 'Header'}`);
-});
+Then('o sistema deve retornar o código de status {int}', async function (statusCode) { /* ... código ... */ });
 
-Given('para a {string}, o header {string} tem o valor {string}', async ({}, _actionDescriptionContext, key, value) => {
-  headerValuesFromBDD[key] = String(value);
-  console.log(`Parâmetro de header definido: Chave='${key}', Valor='${value}'`);
-});
 
-// TODO: IA - Criar o(s) step(s) 'Quando' específico(s) para a(s) ação(ões) do serviço.
-// Exemplo para um POST genérico:
-When('eu envio uma requisição POST para {{ENDPOINT_ACTION_DESCRIPTION_NO_WHEN_WHEN_STEP}}', async function({ request }) {
-  // A IA preenche ENDPOINT_PATH_CURL
-  this.apiResponse = await call{{SERVICE_NAME_PASCAL_CASE}}Api(request, 'POST', ENDPOINT_PATH_CURL, null, requestPayload, headerValuesFromBDD);
-});
-// Exemplo para um GET com query param 'cnpjCorretor':
-// When('eu consulto {{ENDPOINT_ACTION_DESCRIPTION_NO_WHEN_WHEN_STEP}} para o corretor com CNPJ {string}', async function({ request }, cnpjCorretor) {
-//   queryParamsFromBDD.cnpjCorretor = cnpjCorretor;
-//   this.apiResponse = await call{{SERVICE_NAME_PASCAL_CASE}}Api(request, 'GET', ENDPOINT_PATH_CURL, queryParamsFromBDD, null, headerValuesFromBDD);
-// });
+## 🎯 CONTEXTO DO TESTE (Comando cURL):
+{context}
 
-Then('o sistema deve retornar o código de status {int}', async function({}, expectedStatus) {
-  expect(this.apiResponse, "A resposta da API (this.apiResponse) não foi definida.").toBeDefined();
-  expect(this.apiResponse.status(), `Esperado status ${expectedStatus}, mas foi ${this.apiResponse.status()}`).toBe(expectedStatus);
-});
+## 📝 FORMATO DE RESPOSTA OBRIGATÓRIO:
 
-Then('a resposta da {string} deve ser válida', async function({}, _actionDescriptionContext) {
-  expect(this.apiResponse, "A resposta da API (this.apiResponse) não foi definida.").toBeDefined();
+Você DEVE responder EXATAMENTE neste formato:
 
-  if (this.apiResponse.ok()) {
-    try {
-      const contentType = this.apiResponse.headers()['content-type'];
-      if (contentType && contentType.includes('application/json')) {
-        const responseBody = await this.apiResponse.json();
-        expect(typeof responseBody).toMatch(/object|array/);
-        expect(responseBody).not.toBeNull();
-        console.log('Validação básica do corpo da resposta JSON concluída.');
-      } else if (contentType && contentType.includes('application/pdf')) {
-        // Validação básica para PDF, steps mais específicos podem ser necessários
-        const pdfBuffer = await this.apiResponse.body();
-        expect(pdfBuffer.length).toBeGreaterThan(0);
-        console.log('Validação básica da resposta PDF (buffer não vazio) concluída.');
-      } else {
-        const responseText = await this.apiResponse.text();
-        expect(responseText.length).toBeGreaterThanOrEqual(0);
-        console.log('Validação básica do corpo da resposta como texto concluída (não JSON/PDF).');
-      }
-    } catch (e) {
-      console.error("Erro ao validar a resposta:", e);
-      const responseText = await this.apiResponse.text(); // Logar o corpo em caso de erro de parse
-      throw new Error(`Erro ao processar a resposta. Status: ${this.apiResponse.status()}. Corpo: ${responseText}. Erro original: ${e.message}`);
-    }
-  } else {
-    // Para respostas não-2xx, o corpo pode não ser JSON ou pode ser uma mensagem de erro específica.
-    const responseText = await this.apiResponse.text();
-    console.warn(`Resposta não foi OK (Status: ${this.apiResponse.status()}). Corpo: ${responseText}`);
-    // A validação de erro específica (ex: mensagem de erro) pode ser feita em outro step 'Então'.
-  }
-});
+---feature---
+[CONTEÚDO COMPLETO DO ARQUIVO .feature]
+---steps---
+[CONTEÚDO COMPLETO DO ARQUIVO .steps.js]
 
-// TODO: IA - Adicionar steps 'Then' específicos se necessário (ex: validação de header de resposta, conteúdo de PDF, salvar PDF).
-// Exemplo para PDF:
-// Then('o PDF retornado deve conter o texto {string}', async function(...) { /* ... */ });
-// Then('o PDF retornado deve ser salvo como {string}', async function(...) { /* ... */ });
-// Exemplo para header:
-// Then('o header {string} da resposta deve ser {string}', async function(...) { /* ... */ });
+IMPORTANTE:
+- Use as tags ---feature--- e ---steps--- para separar os blocos.
+- NÃO adicione nenhum texto, comentário ou markdown fora das tags.
 
-// --- Healthcheck Steps (se aplicável) ---
-// TODO: IA - Gerar steps de healthcheck se o cURL for para um endpoint /ci/healthcheck
-// Exemplo:
-// const getApiHeadersHealthcheck{{SERVICE_NAME_PASCAL_CASE}} = () => { /* ... */ };
-// async function callHealthcheck{{SERVICE_NAME_PASCAL_CASE}}Api(request) { /* ... */ }
-// When('eu envio uma requisição GET para o healthcheck do serviço de {{SERVICE_NAME_FRIENDLY_LC}}', async function({ request }) { /* ... */ });
-// Then('a resposta do healthcheck do serviço de {{SERVICE_NAME_FRIENDLY_LC}} deve ser válida', async function() { /* ... */ });
+Gere os dois arquivos seguindo EXATAMENTE este padrão.`;
 
-4. Geração do Arquivo .env (Exemplo)
-# === Configuração para o serviço: {{SERVICE_NAME_FROM_URL_PATH_UPPERCASE}} ===
-
-# URL Base para o serviço
-BASE_URL_{{SERVICE_NAME_UPPER_SNAKE_CASE}}={{BASE_URL_FROM_ENDPOINT_URL}} # IA extrai apenas a base da URL completa
-
-# Chave de autenticação/token para o serviço (a IA deve usar o nome correto da chave do cURL)
-{{AUTH_HEADER_NAME_FOR_ENV}}_{{SERVICE_NAME_UPPER_SNAKE_CASE}}={{AUTH_HEADER_VALUE_FROM_CURL_IF_PRESENT_OR_PLACEHOLDER}}
-# Exemplo: CA_KEY_PPRA_SRV_PROPOSTAS_CORRETOR=valor_da_ca_key
-# Exemplo: AUTH_TOKEN_PPRA_SRV_PREVIDENCIACORP=valor_do_token
-# Exemplo: COOKIE_PPRA_SRV_PREVIDENCIACORP=valor_do_cookie
+module.exports = GEMINI_PROMPT;

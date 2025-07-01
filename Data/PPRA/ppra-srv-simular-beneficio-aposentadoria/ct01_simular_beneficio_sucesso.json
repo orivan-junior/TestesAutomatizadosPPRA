@@ -1,0 +1,63 @@
+{
+    "headerInput": {
+        "codigoVersao": 1,
+        "codigoFuncao": 1,
+        "canal": 3,
+        "origem": 5310,
+        "usuario": 999,
+        "identificadorFuncionario": "N",
+        "codigoCorretor": 9001,
+        "identificaRepresentante": "N",
+        "centroCusto": "FGBI"
+    },
+    "dadosParticipante": {
+        "idade": 50,
+        "idadeAteAposentar": 85,
+        "sexo": "F",
+        "nomeContratante": ""
+    },
+    "dadosRendaSimulacao": {
+        "tipoRenda": 1,
+        "prazoRecebimento": 99,
+        "quantidadeRendas": 13,
+        "tipoCalculo": 3
+    },
+    "dadosBeneficiarioMenor": {
+        "dataNascimentoBeneficiario": "01.01.1901",
+        "sexoBeneficiario": "",
+        "idadeMenor": 0,
+        "percentualReversao": 0
+    },
+    "dadosParaCalculo": {
+        "taxaJuros": 0,
+        "taxaCarregamento": 0.00,
+        "tabuaMasculina": 9,
+        "tabuaFeminina": 10,
+        "percentualRentabilidade": 8.00,
+        "rendaEstimada": 0.00,
+        "saldoAcumulado": 0,
+        "saldoProposta": 242000,
+        "valorContribuicao": 5000,
+        "tipoDeclaracaoIR": 0,
+        "indicadorContribuiINSS": 0
+    },
+    "dadosSimulacaoRisco": {
+        "tabuaRiscoParticipante": 0,
+        "jurosTabuaRisco": 0.00,
+        "percentualAgravamentoTabuaRisco": 0,
+        "tabuaSobrevivenciaBeneficiario": 0,
+        "jurosTabuaSobrevivencia": 0.00,
+        "percentualAgravamentoTabuaAcumulacao": 0,
+        "valorPeculioDesejado": 0.00,
+        "valorRendaPensao": 0.00,
+        "prazoPagamentoRenda": 0,
+        "taxaCarregamentoPeculio": 0,
+        "taxaCarregamentoPensao": 0,
+        "idadeParticipante": 0,
+        "idadeBeneficiario": 0
+    },
+    "dadosSimulacaoPorProduto": {
+        "codigoProduto": 0,
+        "codigoBeneficio": 0
+    }
+}

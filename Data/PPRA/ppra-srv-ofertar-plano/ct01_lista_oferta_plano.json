@@ -1,0 +1,27 @@
+{
+    "canal": 3,
+    "cpfCnpjCorretorMatricula": "",
+    "dadosEntrada": {
+        "cpfParticipante": "0",
+        "perfilParticipante": 0,
+       "agenciaParticipante": 0,
+        "numeroContaParticipante": 0,
+        "segmento": 0,
+        "modalidade": 0,
+        "regimeTributario": 0,
+        "tipoContribuicao": 0,
+        "valorContribuicao": 0,
+        "paginacao": {
+            "ocorrenciasPorPagina": 80,
+            "indicadorPagina": "I",
+            "filtroPaginacaoEntrada": {
+                "codigoProduto": "",
+                "codigoPlano": "",
+                "codigoBeneficio": 0,
+                "dataFim": "",
+                "tipoContribuicaoProduto": 0,
+                "tipoCanal": 0
+            }
+        }
+    }
+}
