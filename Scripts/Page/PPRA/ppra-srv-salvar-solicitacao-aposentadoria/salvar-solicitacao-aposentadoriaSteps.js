@@ -86,7 +86,17 @@ Given('que eu utilize o payload do arquivo Salvar solicitacao Aposentadoria {str
     try {
         const fileContent = await fs.readFile(fullPath, 'utf-8');
         requestPayload = JSON.parse(fileContent);
+
+        // Increment the 'numeroProposta' parameter dynamically
+        if (requestPayload.dadosSolicitacao && requestPayload.dadosSolicitacao.numeroProposta) {
+            requestPayload.dadosSolicitacao.numeroProposta += 1;
+
+            // Update the JSON file with the new value
+            await fs.writeFile(fullPath, JSON.stringify(requestPayload, null, 2), 'utf-8');
+        }
+
         console.log(`Payload carregado com sucesso do arquivo: ${fullPath}`);
+        console.log(`'numeroProposta' atualizado para: ${requestPayload.dadosSolicitacao.numeroProposta}`);
     } catch (error) {
         throw new Error(`ERRO: Não foi possível ler ou parsear o arquivo de payload em ${fullPath}. Detalhes: ${error.message}`);
     }
