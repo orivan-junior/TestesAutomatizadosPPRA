@@ -58,6 +58,20 @@ async function callListarSolicitacaoAposentadoriaApi(request, payload) {
     });
 }
 
+async function callGetApi(request, endpoint) {
+    const baseUrl = process.env.BASE_URL_LISTAR_SOLICITACAO_APOSENTADORIA;
+    if (!baseUrl) {
+        throw new Error("ERRO: A variável de ambiente BASE_URL_LISTAR_SOLICITACAO_APOSENTADORIA não está configurada no .env.");
+    }
+    const fullUrl = `${baseUrl}${endpoint}`;
+
+    return await request.get(fullUrl, {
+        headers: {
+            'accept': 'application/json', // Conforme o cURL do healthcheck
+        },
+    });
+}
+
 Given('que eu esteja autenticado em listar a solicitação de aposentadoria', async () => {
     isAuthenticated = true;
     console.log('Autenticação para o cenário ativada. A CA_KEY do .env será utilizada.');
@@ -86,6 +100,21 @@ When('eu envio uma requisição POST para listar a solicitação de aposentadori
         console.log('Corpo da resposta:', responseBody);
     } catch (error) {
         console.log('Corpo da resposta não é JSON ou está vazio:', await this.apiResponse.text());
+    }
+});
+
+/**
+ * Passo genérico e adaptável para requisições GET.
+ * Ele captura o endpoint do arquivo .feature e o utiliza para montar a URL completa da requisição.
+ */
+When('eu envio uma requisição GET para o endpoint Listar solicitacao Aposentadoria {string}', async function({ request }, endpoint) {
+    this.apiResponse = await callGetApi(request, endpoint);
+    console.log(`Requisição GET para ${this.apiResponse.url()} enviada. Status: ${this.apiResponse.status()}`);
+    try {
+        const responseBody = await this.apiResponse.text();
+        console.log('Corpo da resposta:', responseBody);
+    } catch (error) {
+        console.log('Corpo da resposta não é texto ou está vazio.');
     }
 });
 

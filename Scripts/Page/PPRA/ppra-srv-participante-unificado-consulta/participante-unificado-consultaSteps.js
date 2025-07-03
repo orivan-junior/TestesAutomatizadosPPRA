@@ -16,14 +16,14 @@ Before(async () => {
   isAuthenticated = false;
 });
 
-const getApiHeadersOfertarPlano = () => {
+const getApiHeadersParticipanteUnificado = () => {
     if (!isAuthenticated) {
         throw new Error("ERRO: O cenário não foi autenticado. Use o passo 'Dado que eu esteja autenticado'.");
     }
 
-    const caKey = process.env.CA_KEY_SALVAR_SOLICITACAO_APOSENTADORIA;
+    const caKey = process.env.CA_KEY_PARTICIPANTE_UNIFICADO_CONSULTA;
     if (!caKey) {
-        throw new Error("ERRO: A variável de ambiente CA_KEY_SIMULAR_BENEFICIO não está configurada no .env.");
+        throw new Error("ERRO: A variável de ambiente CA_KEY_PARTICIPANTE_UNIFICADO_CONSULTA não está configurada no .env.");
     }
 
     return {
@@ -32,22 +32,22 @@ const getApiHeadersOfertarPlano = () => {
         'codigoVersao': '1',
         'codigoFuncao': '1',
         'canal': '3',
-        'usuario': '999',
-        'origem': '5310',
+        'usuario': '1',
+        'origem': '0',
         'identificadorFuncionario': 'N',
-        'codigoCorretor': '9001',
+        'codigoCorretor': '1',
         'identificaRepresentante': 'N',
         'centroCusto': 'FGBI',
         'Content-Type': 'application/json',
     };
 };
 
-async function callOfertarPlanoApi(request, payload) {
-    const baseUrl = process.env.BASE_URL_SALVAR_SOLICITACAO_APOSENTADORIA;
+async function callParticipanteUnificadoApi(request, payload) {
+    const baseUrl = process.env.BASE_URL_PARTICIPANTE_UNIFICADO_CONSULTA;
     if (!baseUrl) {
-        throw new Error("ERRO: A variável de ambiente BASE_URL_SALVAR_SOLICITACAO_APOSENTADORIA não está configurada no .env.");
+        throw new Error("ERRO: A variável de ambiente BASE_URL_PARTICIPANTE_UNIFICADO_CONSULTA não está configurada no .env.");
     }
-    const endpoint = "/salvar/solicitacao-aposentadoria";
+    const endpoint = "/consultar/participante-unificado";
     const fullUrl = `${baseUrl}${endpoint}`;
     
     // Lê o timeout do .env ou usa 180 segundos (3 minutos) como padrão.
@@ -55,16 +55,16 @@ async function callOfertarPlanoApi(request, payload) {
     const requestTimeout = parseInt(process.env.API_REQUEST_TIMEOUT, 10) || 180000;
 
     return await request.post(fullUrl, {
-        headers: getApiHeadersOfertarPlano(),
+        headers: getApiHeadersParticipanteUnificado(),
         data: payload,
         timeout: requestTimeout,
     });
 }
 
 async function callGetApi(request, endpoint) {
-    const baseUrl = process.env.BASE_URL_SALVAR_SOLICITACAO_APOSENTADORIA;
+    const baseUrl = process.env.BASE_URL_PARTICIPANTE_UNIFICADO_CONSULTA;
     if (!baseUrl) {
-        throw new Error("ERRO: A variável de ambiente BASE_URL_SALVAR_SOLICITACAO_APOSENTADORIA não está configurada no .env.");
+        throw new Error("ERRO: A variável de ambiente BASE_URL_PARTICIPANTE_UNIFICADO_CONSULTA não está configurada no .env.");
     }
     const fullUrl = `${baseUrl}${endpoint}`;
 
@@ -76,33 +76,23 @@ async function callGetApi(request, endpoint) {
 }
 
 
-Given('que eu esteja autenticado para Salvar solicitacao Aposentadoria', async () => {
+Given('que eu esteja autenticado para Consultar participante unificado com Sucesso', async () => {
     isAuthenticated = true;
     console.log('Autenticação para o cenário ativada. A CA_KEY do .env será utilizada.');
 });
 
-Given('que eu utilize o payload do arquivo Salvar solicitacao Aposentadoria {string}', async ({}, filePath) => {
-    const fullPath = path.join(process.cwd(), 'Data', filePath);
+Given('que eu utilize o payload do arquivo Consultar participante unificado {string}', async ({}, filePath) => {
+    const fullPath = path.resolve(process.cwd(), 'Data', filePath);
     try {
         const fileContent = await fs.readFile(fullPath, 'utf-8');
         requestPayload = JSON.parse(fileContent);
-
-        // Increment the 'numeroProposta' parameter dynamically
-        if (requestPayload.dadosSolicitacao && requestPayload.dadosSolicitacao.numeroProposta) {
-            requestPayload.dadosSolicitacao.numeroProposta += 1;
-
-            // Update the JSON file with the new value
-            await fs.writeFile(fullPath, JSON.stringify(requestPayload, null, 2), 'utf-8');
-        }
-
         console.log(`Payload carregado com sucesso do arquivo: ${fullPath}`);
-        console.log(`'numeroProposta' atualizado para: ${requestPayload.dadosSolicitacao.numeroProposta}`);
     } catch (error) {
         throw new Error(`ERRO: Não foi possível ler ou parsear o arquivo de payload em ${fullPath}. Detalhes: ${error.message}`);
     }
 });
 
-When('eu envio uma requisição POST para Salvar solicitacao Aposentadoria', async function({ request }) {
+When('eu envio uma requisição POST para Consultar participante unificado', async function({ request }) {
     expect(requestPayload, "Payload da requisição (requestPayload) não foi definido. O passo 'Given' para carregar o arquivo JSON executou corretamente?").toBeDefined();
 
     console.log('Payload final da requisição:', JSON.stringify(requestPayload, null, 2));
@@ -111,7 +101,7 @@ When('eu envio uma requisição POST para Salvar solicitacao Aposentadoria', asy
     const maxRetries = 3;
 
     while (retryCount < maxRetries) {
-        this.apiResponse = await callOfertarPlanoApi(request, requestPayload);
+        this.apiResponse = await callParticipanteUnificadoApi(request, requestPayload);
         console.log(`Requisição POST para ${this.apiResponse.url()} enviada. Status: ${this.apiResponse.status()}`);
 
         if (this.apiResponse.status() === 400) {
@@ -149,7 +139,7 @@ When('eu envio uma requisição POST para Salvar solicitacao Aposentadoria', asy
  * Passo genérico e adaptável para requisições GET.
  * Ele captura o endpoint do arquivo .feature e o utiliza para montar a URL completa da requisição.
  */
-When('eu envio uma requisição GET para o endpoint Salvar solicitacao Aposentadoria {string}', async function({ request }, endpoint) {
+When('eu envio uma requisição GET para o endpoint Consultar participante unificado {string}', async function({ request }, endpoint) {
     this.apiResponse = await callGetApi(request, endpoint);
     console.log(`Requisição GET para ${this.apiResponse.url()} enviada. Status: ${this.apiResponse.status()}`);
     try {
@@ -160,7 +150,7 @@ When('eu envio uma requisição GET para o endpoint Salvar solicitacao Aposentad
     }
 });
 
-Then('a resposta para Salvar solicitacao Aposentadoria deve ser válida', async function() {
+Then('a resposta para Consultar participante unificado deve ser válida', async function() {
   expect(this.apiResponse, "A resposta da API (this.apiResponse) não foi definida.").toBeDefined();
   expect(this.apiResponse.ok(), `A simulação falhou com status ${this.apiResponse.status()}. Corpo: ${await this.apiResponse.text()}`).toBe(true);
 
