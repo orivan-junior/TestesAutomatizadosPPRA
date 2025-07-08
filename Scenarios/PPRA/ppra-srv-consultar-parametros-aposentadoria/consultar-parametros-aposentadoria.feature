@@ -1,7 +1,7 @@
 #language: pt
 Funcionalidade: SISTRAN » Projeto - PPRA-SRV-CONSULTAR-PARAMETROS-APOSENTADORIA
 
-  @consultarParametros @ppra
+  @ppra
   Cenário: CT001 - Consultar parâmetros de aposentadoria sem sucesso
     # Parâmetros do corpo da requisição
     Dado que eu não esteja autenticado
@@ -22,7 +22,7 @@ Funcionalidade: SISTRAN » Projeto - PPRA-SRV-CONSULTAR-PARAMETROS-APOSENTADORIA
     Então o sistema deve retornar o código de status 403
     E a resposta da consulta de parâmetros deve ser válida
 
-  @consultarParametros @ppra
+  @ppra
   Cenário: CT001 - Consultar parâmetros de aposentadoria com sucesso
     # Parâmetros do corpo da requisição
     Dado para a consulta de parâmetros, a chave "identificaConsulta" tem o valor "1"
@@ -42,7 +42,7 @@ Funcionalidade: SISTRAN » Projeto - PPRA-SRV-CONSULTAR-PARAMETROS-APOSENTADORIA
     Então o sistema deve retornar o código de status 200
     E a resposta da consulta de parâmetros deve ser válida
 
-  @healthcheck @ppra
+  @ppra
   Cenário: CT002 - Consultar Healthcheck do serviço de consulta de parâmetros
     Quando eu envio uma requisição GET para o healthcheck do serviço de consulta de parâmetros
     Então a resposta do healthcheck do serviço de consulta de parâmetros deve ser válida

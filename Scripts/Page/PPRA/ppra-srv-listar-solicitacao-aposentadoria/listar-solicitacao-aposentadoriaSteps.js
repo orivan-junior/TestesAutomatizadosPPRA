@@ -47,11 +47,14 @@ async function callListarSolicitacaoAposentadoriaApi(request, payload) {
     if (!baseUrl) {
         throw new Error("ERRO: A variável de ambiente BASE_URL_LISTAR_SOLICITACAO_APOSENTADORIA não está configurada no .env.");
     }
+
+    const endpoint = "/listar/solicitacao";
+    const fullUrl = `${baseUrl}${endpoint}`;
     
     // Lê o timeout do .env ou usa 180 segundos (3 minutos) como padrão.
     const requestTimeout = parseInt(process.env.API_REQUEST_TIMEOUT, 10) || 180000;
 
-    return await request.post(baseUrl, {
+    return await request.post(fullUrl, {
         headers: getApiHeadersForListarSolicitacaoAposentadoria(),
         data: payload,
         timeout: requestTimeout,

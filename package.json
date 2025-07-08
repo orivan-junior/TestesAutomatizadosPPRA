@@ -12,7 +12,7 @@
     "run_historico-allure-results": "npx allure serve allure-results",
     "run_bdd_playwright": "npx bddgen && npx playwright test",
     "run_playwright": "npx playwright test",
-    "teste": "npx bddgen && npx playwright test --grep @teste2",
+    "teste": "npx bddgen && npx playwright test --grep @teste3",
     "ppra": "npx bddgen && npx playwright test --grep @ppra"
   },
   "dependencies": {

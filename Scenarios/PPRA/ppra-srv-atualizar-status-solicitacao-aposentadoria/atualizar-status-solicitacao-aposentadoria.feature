@@ -1,7 +1,7 @@
 # language: pt
 Funcionalidade: SISTRAN » Projeto - ppra-SRV-ATUALIZAR-STATUS-SOLICITACAO-APOSENTADORIA
 
-  @atualizarStatus @ppra
+  @ppra
   Cenário: CT001 - Atualizar status de uma solicitação de aposentadoria sem sucesso
     Dado para a atualização, a chave "codigoSolicitacao" tem o valor "9000001117"
     E para a atualização, a chave "codigoSituacao" tem o valor "8"
@@ -20,7 +20,7 @@ Funcionalidade: SISTRAN » Projeto - ppra-SRV-ATUALIZAR-STATUS-SOLICITACAO-APOSE
     Então o sistema deve retornar o código de status 422
     
 
-  @atualizarStatus @ppra
+  @ppra
   Cenário: CT001 - Atualizar status de uma solicitação de aposentadoria com sucesso
     Dado para a atualização, a chave "codigoSolicitacao" tem o valor "12345"
     E para a atualização, a chave "codigoSituacao" tem o valor "2"
@@ -39,7 +39,7 @@ Funcionalidade: SISTRAN » Projeto - ppra-SRV-ATUALIZAR-STATUS-SOLICITACAO-APOSE
     Então o sistema deve retornar o código de status 422
     #Deveria ser 200 - estamos verificando codigo de solicitação
 
-  @healthcheck @ppra
+  @ppra
   Cenário: CT002 - Consultar Healthcheck do serviço de atualização de status
     Quando eu envio uma requisição GET para o healthcheck do serviço de atualização de status
     Então a resposta do healthcheck do serviço de atualização de status deve ser válida
